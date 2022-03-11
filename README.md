@@ -21,5 +21,3 @@ git pull
 ## SETUP INSTRUCTIONS
 
 Copy directory **openvpn-migration** to the root's home directory **/home/root**.
-
-#### AAAA
