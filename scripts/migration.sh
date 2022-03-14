@@ -1,8 +1,12 @@
 #!/bin/bash
 
 ## settings
+
+# script home path
+script_home="/home/root/openvpn-migration"
+
 # backup destination
-backup_destination="/home/root/vpn_migration/_backup"
+backup_destination="$script_home/_backup"
 
 # custom backup file
 custom_backup_file="CCcam.cfg"
@@ -22,10 +26,10 @@ cpu_type=$(uname -m)
 bin_dir_location="/usr/sbin/"
 
 # logfile
-logs="/home/root/vpn_migration/_logs/migration.log"
+logs="$script_home/_logs/migration.log"
 
 # new vpn user's files directory
-new_vpn_files="/home/root/vpn_migration/vpn_files"
+new_vpn_files="$script_home/vpn_files"
 
 # date
 d="[`date '+%F %T'`]"
@@ -56,11 +60,11 @@ check_backup () {
 # set binary file function 
 binary_file_is () {
   if [ "$cpu_type" = "mips" ]; then
-    bin_file_is="/home/root/vpn_migration/binaries/mips/openvpn"
+    bin_file_is="$script_home/binaries/mips/openvpn"
 	echo "$d Hardware je mips" >> $logs
 	echo "Hardware je mips."
   else
-    bin_file_is="/home/root/vpn_migration/binaries/arm71/openvpn"
+    bin_file_is="$script_home/binaries/arm71/openvpn"
 	echo "$d Hardware je arm71" >> $logs
 	echo "Hardware je mips arm71."
   fi
