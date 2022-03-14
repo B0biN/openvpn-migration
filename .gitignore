@@ -1,5 +1,6 @@
-_backup/.gitkeep
+!_backup/.gitkeep
 _backup/current/*
 _logs/*
+!_logs/.gitkeep
 vpn_files/*
 !vpn_files/.gitkeep
