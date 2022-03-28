@@ -152,7 +152,6 @@ stop_openvpn () {
   else
 	echo "$d OpenVPN nebezi." >> $logs
 	echo "OpenVPN nebezi."
-	exit
   fi
 }
 
@@ -165,6 +164,9 @@ rm_and_cp_files () {
 	rm /usr/sbin/openvpn
 	cp $bin_file_is /usr/sbin/
 	chmod +x /usr/sbin/openvpn
+	echo "$d Nastavuji OpenVPN po spusteni systemu" >> $logs
+	echo "Nastavuji OpenVPN po spusteni systemu."
+	/usr/sbin/update-rc.d openvpn defaults >> $logs
 	echo "$d Migrace ukoncena, startuji OpenVPN" >> $logs
 	echo "Migrace ukoncena, startuji OpenVPN." 
 	/etc/init.d/openvpn start
