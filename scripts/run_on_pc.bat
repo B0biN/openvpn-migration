@@ -1,9 +1,9 @@
 @ECHO OFF 
 :: setings
-set box_ip="192.168.88.123"
-set plink="%USERPROFILE%\Documents\GIT\openvpn-migration\_tools\plink.exe"
-set pscp="%USERPROFILE%\Documents\GIT\openvpn-migration\_tools\pscp.exe"
-set source_dir="%USERPROFILE%\Documents\GIT\openvpn-migration"
+set box_ip="172.17.99.73"
+set plink="%USERPROFILE%\Desktop\B0bin\openvpn-migration\_tools\plink.exe"
+set pscp="%USERPROFILE%\Desktop\B0bin\openvpn-migration\_tools\pscp.exe"
+set source_dir="%USERPROFILE%\Desktop\B0bin\openvpn-migration"
 set destination_dir="/home/root/openvpn-migration"
 GOTO:MAIN
 
@@ -29,20 +29,22 @@ if exist %pscp% (
 
 :: actions
 :ACTION
+ECHO [ Povoluji opraveneni pres SSH ]
+echo yes | %plink% -ssh root@%box_ip% date
 ECHO [ Vytvarim vzdalene adresare "openvpn-migration a _logs" ]
 %plink% -ssh -batch root@%box_ip% mkdir -p %destination_dir% %destination_dir%/_logs
 ECHO [ Kopiruji soubory "binaries" ]
-%pscp% -scp -r %source_dir%\binaries root@%box_ip%:%destination_dir%
+%pscp% -scp -batch -r %source_dir%\binaries root@%box_ip%:%destination_dir%
 ECHO [ Kopiruji soubory "vpn_files" ]
-%pscp% -scp -r %source_dir%\vpn_files root@%box_ip%:%destination_dir%
+%pscp% -scp -batch -r %source_dir%\vpn_files root@%box_ip%:%destination_dir%
 ECHO [ Kopiruji soubory "scripts" ]
-%pscp% -scp -r %source_dir%\scripts root@%box_ip%:%destination_dir%
+%pscp% -scp -batch -r %source_dir%\scripts root@%box_ip%:%destination_dir%
 ECHO [ Zmena kodovani pro "migration.sh" skript ]
 %plink% -ssh -batch root@%box_ip% dos2unix %destination_dir%/scripts/migration.sh
 ECHO [ Nastaveni execute pro "migration.sh" skript ]
 %plink% -ssh -batch root@%box_ip% chmod +x %destination_dir%/scripts/migration.sh
 ECHO [ Spoustim migracni skript "migration.sh" ]
-%plink% -ssh -batch root@%box_ip% %destination_dir%/scripts/migration.sh
+%plink% -ssh -batch root@%box_ip% %destination_dir%/scripts/migration.sh &
 GOTO:EOF
 
 :test
