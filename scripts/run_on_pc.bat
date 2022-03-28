@@ -1,9 +1,9 @@
 @ECHO OFF 
 :: setings
-set box_ip="172.17.99.73"
-set plink="%USERPROFILE%\Desktop\B0bin\openvpn-migration\_tools\plink.exe"
-set pscp="%USERPROFILE%\Desktop\B0bin\openvpn-migration\_tools\pscp.exe"
-set source_dir="%USERPROFILE%\Desktop\B0bin\openvpn-migration"
+set box_ip="192.168.88.109"
+set plink="%USERPROFILE%\Documents\GIT\openvpn-migration\_tools\plink.exe"
+set pscp="%USERPROFILE%\Documents\GIT\openvpn-migration\_tools\pscp.exe"
+set source_dir="%USERPROFILE%\Documents\GIT\openvpn-migration"
 set destination_dir="/home/root/openvpn-migration"
 GOTO:MAIN
 
@@ -57,4 +57,5 @@ call:plink_check
 
 :EOF
 echo [ end ]
+pause
 exit /b

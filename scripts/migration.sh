@@ -34,6 +34,9 @@ new_vpn_files="$script_home/vpn_files"
 # date
 d="[`date '+%F %T'`]"
 
+# check inittab
+check_inittab=$(grep openvpn /etc/inittab)
+
 ## functions
 # backup function
 do_backup () {
@@ -86,6 +89,34 @@ openvpn_running () {
   fi
 }
 
+is_openvpn_running () {
+  if [ -f /var/run/openvpn.client.pid ]; then
+	openvpn_pid=$(cat /var/run/openvpn.client.pid)
+	echo "$d OpenVPN po migraci bezi (pid id: $openvpn_pid)" >> $logs
+	echo "OpenVPN po migraci bezi (pid id: $openvpn_pid)."
+	exit
+  else
+	echo "$d OpenVPN neni spusteny, pokusim se ho spustit" >> $logs
+	echo "OpenVPN neni spusteny, pokusim se ho spustit."
+	echo "$d Startuji OpenVPN" >> $logs
+	/etc/init.d/openvpn start >> $logs
+  fi
+}
+
+openvpn_after_reboot () {
+  if [ -z "$check_inittab" ]; then
+	echo "$d Autostart pro OpenVPN neni nastaven" >> $logs
+	echo "Autostart pro OpenVPN neni nastaven."
+	echo "$d Nastavuji autostart pro OpenVPN." >> $logs
+	echo "Nastavuji autostart pro OpenVPN do /etc/inittab."
+	echo "$d Nastavuji autostart pro OpenVPN do /etc/inittab" >> $logs
+	echo "openvpn:3:sysinit:/etc/init.d/openvpn start" >> /etc/inittab
+  else
+	echo "$d Autostart pro OpenVPN jiz existuje" >> $logs
+	echo "Autostart pro OpenVPN jiz existuje."
+  fi
+}
+
 # parse name of client's filename from client.conf
 get_client_filename () {
   if [ -f $new_vpn_files/client.conf ]; then
@@ -134,7 +165,10 @@ rm_and_cp_files () {
 	rm /usr/sbin/openvpn
 	cp $bin_file_is /usr/sbin/
 	chmod +x /usr/sbin/openvpn
+	echo "$d Migrace ukoncena, startuji OpenVPN" >> $logs
+	echo "Migrace ukoncena, startuji OpenVPN." 
 	/etc/init.d/openvpn start
+	sleep 3
   else
 	echo "$d OpenVPN stale bezi" >> $logs
 	echo "OpenVPN stale bezi."
@@ -142,14 +176,19 @@ rm_and_cp_files () {
   fi
 }
 
-
 run_migration () {
   if [ "$do_migrate" = "1" ]; then
 	echo "$d Spoustim migraci" >> $logs
 	echo "Spoustim migraci OpenVPN."
-	echo $do_migrate
+	echo "Zastavuji OpenVPN."
+	echo "$d Zastavuji OpenVPN" >> $logs
 	stop_openvpn
+	echo "Kopiruji nove soubory."
+	echo "$d Kopiruji nove soubory" >> $logs
 	rm_and_cp_files
+	#echo "$d Kontrola autostart OpenVPN" >> $logs
+	#echo "Kontrola autostart OpenVPN"
+	#openvpn_after_reboot
   else
     echo "$d Neco neni v poradku... migrace pozastavena!" >> $logs
 	echo "Neco neni v poradku... migrace pozastavena!"
@@ -157,19 +196,14 @@ run_migration () {
   fi
 }
 
-# pokracujeme function
-pokracujeme () {
-  echo $cpu_type
-}
-
 # load functions
 check_backup
 binary_file_is
 openvpn_running
-#get_client_filename
 check_new_vpn_files
-#pokracujeme
-#echo $do_migrate
 run_migration
 
+# bezi OpenVPN?
+is_openvpn_running
+is_openvpn_running
 
